@@ -1,0 +1,38 @@
+{
+  "facts": [
+    {
+      "type": "new",
+      "name": "Animal"
+    },
+    {
+      "type": "new",
+      "name": "Mammal",
+      "similarTo": "Animal",
+      "properties": [
+        {
+          "name": "blooded",
+          "value": "warm"
+        },
+        {
+          "name": "hair",
+          "value": true
+        }
+      ]
+    },
+    {
+      "type": "new",
+      "name": "Reptile",
+      "similarTo": "Animal",
+      "properties": [
+        {
+          "name": "blooded",
+          "value": "cold"
+        },
+        {
+          "name": "hair",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

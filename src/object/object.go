@@ -21,6 +21,10 @@ func (obj *Object) Set(propertyName string, value interface{}) {
 	obj.propertyMap[propertyName] = value
 }
 
+func (obj *Object) Unset(propertyName string) {
+	delete(obj.propertyMap, propertyName)
+}
+
 func (obj *Object) Prototype() *Object {
 	return obj.prototype
 }
