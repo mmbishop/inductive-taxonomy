@@ -8,8 +8,8 @@ import (
 
 var (
 	instance *Object
-	name     string
 	obj      *Object
+	showName string
 )
 
 func object_returns_property_value_when_it_is_defined_locally(t *testing.T) {
@@ -49,31 +49,31 @@ func change_to_prototype_property_affects_object_when_it_does_not_override_the_p
 }
 
 func given_an_object() {
-	obj = NewObject()
-	obj.Set("name", "Bugs Bunny")
+	obj = NewObject("Bugs Bunny")
+	obj.Set("showName", "Bugs Bunny")
 }
 
 func given_an_object_with_a_prototype() {
-	obj = NewObject()
-	prototype := NewObject()
-	prototype.Set("name", "Character to be named later")
+	obj = NewObject("Yosemite Sam")
+	prototype := NewObject("Character")
+	prototype.Set("showName", "Bugs Bunny")
 	obj.SetPrototype(prototype)
 }
 
 func given_an_object_with_a_prototype_and_overridden_property() {
-	obj = NewObject()
-	prototype := NewObject()
-	prototype.Set("name", "Character to be named later")
+	obj = NewObject("Tom")
+	prototype := NewObject("Character")
+	prototype.Set("showName", "Bugs Bunny")
 	obj.SetPrototype(prototype)
-	obj.Set("name", "Bugs Bunny")
+	obj.Set("showName", "Tom and Jerry")
 }
 
 func when_a_property_of_the_object_is_requested() {
-	name = obj.Get("name").(string)
+	showName = obj.Get("showName").(string)
 }
 
 func when_a_property_of_the_object_is_modified() {
-	obj.Set("name", "Yosemite Sam")
+	obj.Set("height", 140)
 }
 
 func when_the_object_is_instantiated() {
@@ -81,23 +81,23 @@ func when_the_object_is_instantiated() {
 }
 
 func when_a_property_is_reset_to_its_default_value() {
-	obj.Unset("name")
+	obj.Unset("showName")
 }
 
 func when_a_property_of_the_prototype_changes() {
-	obj.Prototype().Set("name", "Tweety Bird")
+	obj.Prototype().Set("showName", "Tom and Jerry")
 }
 
 func then_the_property_value_is_returned(t *testing.T) {
-	assert.Equal(t, "Bugs Bunny", name)
+	assert.Equal(t, "Bugs Bunny", showName)
 }
 
 func then_the_property_has_a_new_value(t *testing.T) {
-	assert.Equal(t, "Yosemite Sam", obj.Get("name"))
+	assert.Equal(t, 140, obj.Get("height").(int))
 }
 
 func then_the_property_value_is_obtained_from_the_prototype(t *testing.T) {
-	assert.Equal(t, "Character to be named later", obj.Get("name"))
+	assert.Equal(t, "Bugs Bunny", obj.Get("showName"))
 }
 
 func then_the_object_becomes_the_prototype_of_the_instance(t *testing.T) {
@@ -105,11 +105,11 @@ func then_the_object_becomes_the_prototype_of_the_instance(t *testing.T) {
 }
 
 func then_the_property_value_reverts_to_its_default(t *testing.T) {
-	assert.Equal(t, "Character to be named later", obj.Get("name"))
+	assert.Equal(t, "Bugs Bunny", obj.Get("showName"))
 }
 
 func then_the_object_returns_the_property_value_defined_in_the_property(t *testing.T) {
-	assert.Equal(t, "Tweety Bird", obj.Prototype().Get("name"))
+	assert.Equal(t, "Tom and Jerry", obj.Prototype().Get("showName"))
 }
 
 func TestGetProperty(t *testing.T) {
