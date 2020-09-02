@@ -83,19 +83,19 @@ func when_its_prototype_relationships_are_requested() {
 }
 
 func when_facts_representing_new_objects_are_asserted() {
-	fact := NewFact("new", "Animal", "")
+	fact := NewFact(NEW, "Animal", "")
 	taxonomy.AcceptFact(*fact)
-	fact = NewFact("new", "Mammal", "Animal")
+	fact = NewFact(UPDATE, "Mammal", "Animal")
 	fact.AddProperty(NewProperty("blooded", "warm"))
 	fact.AddProperty(NewProperty("hasHair", true))
 	taxonomy.AcceptFact(*fact)
 }
 
 func when_facts_modifying_the_taxonomy_are_asserted() {
-	fact := NewFact("new", "Obj 3", "Obj 1")
+	fact := NewFact(NEW, "Obj 3", "Obj 1")
 	fact.AddProperty(NewProperty("prop3", "value3"))
 	taxonomy.AcceptFact(*fact)
-	fact = NewFact("update", "Obj 2", "Obj 3")
+	fact = NewFact(UPDATE, "Obj 2", "Obj 3")
 	taxonomy.AcceptFact(*fact)
 }
 

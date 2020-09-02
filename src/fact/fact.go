@@ -1,13 +1,23 @@
 package fact
 
+type FactType int
+
+const (
+	NEW FactType = 1 + iota
+	UPDATE
+	INSTANTIATE
+	PROMOTE
+	DELETE
+)
+
 type Fact struct {
-	factType   string
+	factType   FactType
 	name       string
 	similarTo  string
 	properties []Property
 }
 
-func NewFact(factType string, name string, similarTo string) *Fact {
+func NewFact(factType FactType, name string, similarTo string) *Fact {
 	return &Fact{factType, name, similarTo, []Property{}}
 }
 
@@ -23,7 +33,7 @@ func (fact *Fact) SetProperties(properties []Property) {
 	fact.properties = properties
 }
 
-func (fact Fact) FactType() string {
+func (fact Fact) FactType() FactType {
 	return fact.factType
 }
 

@@ -41,9 +41,9 @@ func (t *Taxonomy) AddObject(obj *Object) {
 
 func (t *Taxonomy) AcceptFact(fact Fact) {
 	switch fact.FactType() {
-	case "new":
+	case NEW:
 		t.AddObject(createObject(fact, t))
-	case "update":
+	case UPDATE:
 		updateObject(fact, t)
 	}
 }
