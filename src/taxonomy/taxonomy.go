@@ -1,7 +1,6 @@
 package taxonomy
 
 import (
-	. "fact"
 	. "object"
 )
 
@@ -37,40 +36,4 @@ func (t Taxonomy) GetPrototypeRelationships() []*PrototypeRelationship {
 
 func (t *Taxonomy) AddObject(obj *Object) {
 	t.objectMap[obj.Name()] = obj
-}
-
-func (t *Taxonomy) AcceptFact(fact Fact) {
-	switch fact.FactType() {
-	case NEW:
-		t.AddObject(createObject(fact, t))
-	case UPDATE:
-		updateObject(fact, t)
-	}
-}
-
-func createObject(fact Fact, taxonomy *Taxonomy) *Object {
-	obj := NewObject(fact.Name())
-	setObjectProperties(obj, fact.Properties())
-	setPrototypeIfSpecified(obj, fact.SimilarTo(), taxonomy)
-	return obj
-}
-
-func updateObject(fact Fact, taxonomy *Taxonomy) {
-	obj := taxonomy.objectMap[fact.Name()]
-	if obj != nil {
-		setObjectProperties(obj, fact.Properties())
-		setPrototypeIfSpecified(obj, fact.SimilarTo(), taxonomy)
-	}
-}
-
-func setObjectProperties(obj *Object, properties []Property) {
-	for _, property := range properties {
-		obj.Set(property.Name(), property.Value())
-	}
-}
-
-func setPrototypeIfSpecified(obj *Object, prototypeName string, taxonomy *Taxonomy) {
-	if len(prototypeName) > 0 {
-		obj.SetPrototype(taxonomy.objectMap[prototypeName])
-	}
 }

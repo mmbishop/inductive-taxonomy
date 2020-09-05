@@ -34,6 +34,10 @@ func (obj *Object) Unset(propertyName string) {
 	delete(obj.propertyMap, propertyName)
 }
 
+func (obj *Object) Properties() map[string]interface{} {
+	return obj.propertyMap
+}
+
 func (obj Object) Prototype() *Object {
 	return obj.prototype
 }
