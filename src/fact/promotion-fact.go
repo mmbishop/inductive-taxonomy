@@ -36,6 +36,7 @@ func (pf PromotionFact) Apply(taxonomy *Taxonomy) *Taxonomy {
 		}
 	}
 	setProperties(prototype, propertySet)
+	prototype.SetPrototype(objects[0].Prototype())
 	for _, object := range objects {
 		removeProperties(object, propertySet)
 		object.SetPrototype(prototype)

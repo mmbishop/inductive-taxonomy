@@ -6,18 +6,30 @@ import (
 )
 
 type ObjectAdditionFact struct {
-	object *Object
+	objectName    string
+	prototypeName string
+	properties    []Property
 }
 
-func NewObjectAdditionFact(object *Object) *ObjectAdditionFact {
-	return &ObjectAdditionFact{object: object}
+func NewObjectAdditionFact(objectName string, prototypeName string, properties []Property) *ObjectAdditionFact {
+	return &ObjectAdditionFact{objectName: objectName, prototypeName: prototypeName, properties: properties}
 }
 
-func (oaf ObjectAdditionFact) Object() *Object {
-	return oaf.object
+func (oaf ObjectAdditionFact) NewObjectName() string {
+	return oaf.objectName
 }
 
 func (oaf ObjectAdditionFact) Apply(taxonomy *Taxonomy) *Taxonomy {
-	taxonomy.AddObject(oaf.object)
+	object := NewObject(oaf.objectName)
+	for _, property := range oaf.properties {
+		object.Set(property.Name(), property.Value())
+	}
+	if len(oaf.prototypeName) > 0 {
+		prototype := taxonomy.GetObject(oaf.prototypeName)
+		if prototype != nil {
+			object.SetPrototype(prototype)
+		}
+	}
+	taxonomy.AddObject(object)
 	return taxonomy
 }
