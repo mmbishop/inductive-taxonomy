@@ -2,6 +2,8 @@ package tests
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
+	. "object"
 	. "operators"
 	. "taxonomy"
 	"testing"
@@ -15,15 +17,32 @@ func TestSampleAnimalTaxonomy(t *testing.T) {
 	marisaSeesClydeTheElephant()
 	marisaSeesJerryTheGiraffe()
 	marisaLearnsThatStanleyIsAReptile()
-	marisaLearnsThatClydeAndJerryAreMammals()
 	marisaLearnsThatClydeIsAnElephant()
+	marisaLearnsThatJerryIsAGiraffe()
+	marisaLearnsThatElephantsAndGiraffesAreMammals()
 	marisaSeesChloeTheElephant()
 	marisaSeesClaireTheElephant()
 	marisaRealizesThatSomeElephantsHaveTusksAndSomeElephantsDoNot()
-	clyde := animalTaxonomy.GetObject("Clyde")
-	chloe := animalTaxonomy.GetObject("Chloe")
-	fmt.Println("Clyde has tusks:", clyde.Get("hasTusks"))
-	fmt.Println("Chloe has tusks:", chloe.Get("hasTusks"))
+
+	printTaxonomy(animalTaxonomy)
+
+	checkPrototype(t, animalTaxonomy, "Mammal", "Animal")
+	checkPrototype(t, animalTaxonomy, "Reptile", "Animal")
+	checkPrototype(t, animalTaxonomy, "Elephant", "Mammal")
+	checkPrototype(t, animalTaxonomy, "Giraffe", "Mammal")
+	checkPrototype(t, animalTaxonomy, "ElephantWithTusks", "Elephant")
+	checkPrototype(t, animalTaxonomy, "ElephantWithoutTusks", "Elephant")
+	checkPrototype(t, animalTaxonomy, "Stanley", "Reptile")
+	checkPrototype(t, animalTaxonomy, "Clyde", "ElephantWithTusks")
+	checkPrototype(t, animalTaxonomy, "Chloe", "ElephantWithoutTusks")
+	checkPrototype(t, animalTaxonomy, "Claire", "ElephantWithoutTusks")
+	checkPrototype(t, animalTaxonomy, "Jerry", "Giraffe")
+	assert.True(t, animalTaxonomy.GetObject("Clyde").Get("hasTusks").(bool))
+	assert.False(t, animalTaxonomy.GetObject("Chloe").Get("hasTusks").(bool))
+	assert.Equal(t, "warm", animalTaxonomy.GetObject("Jerry").Get("blooded"))
+	assert.True(t, animalTaxonomy.GetObject("Claire").Get("hasTrunk").(bool))
+	assert.True(t, animalTaxonomy.GetObject("Clyde").Get("hasHair").(bool))
+	assert.Equal(t, "cold", animalTaxonomy.GetObject("Stanley").Get("blooded"))
 }
 
 func createInitialTaxonomy() *Taxonomy {
@@ -61,13 +80,18 @@ func marisaSeesJerryTheGiraffe() {
 	animalTaxonomy = oao.Apply(animalTaxonomy)
 }
 
-func marisaLearnsThatClydeAndJerryAreMammals() {
-	po := NewPromotionOperator("Mammal", []string{"Clyde", "Jerry"})
+func marisaLearnsThatClydeIsAnElephant() {
+	po := NewPromotionOperator("Elephant", []string{"Clyde"})
 	animalTaxonomy = po.Apply(animalTaxonomy)
 }
 
-func marisaLearnsThatClydeIsAnElephant() {
-	po := NewPromotionOperator("Elephant", []string{"Clyde"})
+func marisaLearnsThatJerryIsAGiraffe() {
+	po := NewPromotionOperator("Giraffe", []string{"Jerry"})
+	animalTaxonomy = po.Apply(animalTaxonomy)
+}
+
+func marisaLearnsThatElephantsAndGiraffesAreMammals() {
+	po := NewPromotionOperator("Mammal", []string{"Elephant", "Giraffe"})
 	animalTaxonomy = po.Apply(animalTaxonomy)
 }
 
@@ -94,9 +118,39 @@ func addElephant(name string, propertyMap map[string]interface{}) {
 }
 
 func createProperties(propertyMap map[string]interface{}) []Property {
-	properties := make([]Property, len(propertyMap))
+	var properties []Property
 	for key, val := range propertyMap {
 		properties = append(properties, NewProperty(key, val))
 	}
 	return properties
+}
+
+func printTaxonomy(taxonomy *Taxonomy) {
+	prototypeRelationships := taxonomy.GetPrototypeRelationships()
+	for _, prototypeRelationship := range prototypeRelationships {
+		printObjectString(prototypeRelationship.Instance())
+		fmt.Print(" -> ")
+		printObjectString(*prototypeRelationship.Prototype())
+		fmt.Println()
+	}
+}
+
+func printObjectString(object Object) {
+	fmt.Print(object.Name())
+	propertyCount := len(object.Properties())
+	if len(object.Properties()) > 0 {
+		fmt.Print("{")
+		i := 0
+		for key, val := range object.Properties() {
+			fmt.Print(key, ": ", val)
+			if i++; i < propertyCount {
+				fmt.Print(", ")
+			}
+		}
+		fmt.Print("}")
+	}
+}
+
+func checkPrototype(t *testing.T, taxonomy *Taxonomy, instanceName string, prototypeName string) {
+	assert.Equal(t, animalTaxonomy.GetObject(prototypeName), animalTaxonomy.GetObject(instanceName).Prototype())
 }
