@@ -1,4 +1,4 @@
-package fact
+package operators
 
 import (
 	"github.com/deckarep/golang-set"
@@ -6,27 +6,27 @@ import (
 	. "taxonomy"
 )
 
-type PromotionFact struct {
+type PromotionOperator struct {
 	prototypeName string
 	objectNames   []string
 }
 
-func NewPromotionFact(prototypeName string, objectNames []string) *PromotionFact {
-	return &PromotionFact{prototypeName: prototypeName, objectNames: objectNames}
+func NewPromotionOperator(prototypeName string, objectNames []string) *PromotionOperator {
+	return &PromotionOperator{prototypeName: prototypeName, objectNames: objectNames}
 }
 
-func (pf PromotionFact) PrototypeName() string {
-	return pf.prototypeName
+func (po PromotionOperator) PrototypeName() string {
+	return po.prototypeName
 }
 
-func (pf PromotionFact) ObjectNames() []string {
-	return pf.objectNames
+func (po PromotionOperator) ObjectNames() []string {
+	return po.objectNames
 }
 
-func (pf PromotionFact) Apply(taxonomy *Taxonomy) *Taxonomy {
-	prototype := NewObject(pf.prototypeName)
+func (po PromotionOperator) Apply(taxonomy *Taxonomy) *Taxonomy {
+	prototype := NewObject(po.prototypeName)
 	var propertySet mapset.Set = nil
-	objects := getObjects(pf.objectNames, taxonomy)
+	objects := getObjects(po.objectNames, taxonomy)
 	for _, object := range objects {
 		if propertySet == nil {
 			propertySet = mapset.NewSet()

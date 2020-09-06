@@ -34,6 +34,19 @@ func (t Taxonomy) GetPrototypeRelationships() []*PrototypeRelationship {
 	return prototypeRelationships
 }
 
+func (t Taxonomy) GetInstances(prototypeName string) []*Object {
+	var instances []*Object
+	prototype := t.GetObject(prototypeName)
+	if prototype != nil {
+		for _, object := range t.objectMap {
+			if object.Prototype() == prototype {
+				instances = append(instances, object)
+			}
+		}
+	}
+	return instances
+}
+
 func (t *Taxonomy) AddObject(obj *Object) {
 	t.objectMap[obj.Name()] = obj
 }

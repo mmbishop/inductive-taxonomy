@@ -1,8 +1,8 @@
-package fact
+package operators
 
 import . "taxonomy"
 
-type Fact interface {
+type Operator interface {
 	ObjectName() string
 	Properties() []Property
 	Apply(taxonomy *Taxonomy) *Taxonomy

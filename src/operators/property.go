@@ -1,4 +1,4 @@
-package fact
+package operators
 
 type Property struct {
 	name  string

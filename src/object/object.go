@@ -21,7 +21,10 @@ func (obj *Object) SetName(newName string) {
 func (obj Object) Get(propertyName string) interface{} {
 	value := obj.propertyMap[propertyName]
 	if value == nil {
-		value = obj.prototype.Get(propertyName)
+		prototype := obj.Prototype()
+		if prototype != nil {
+			value = obj.prototype.Get(propertyName)
+		}
 	}
 	return value
 }

@@ -1,8 +1,8 @@
 package tests
 
 import (
-	. "fact"
 	"github.com/stretchr/testify/assert"
+	. "operators"
 	"testing"
 )
 
