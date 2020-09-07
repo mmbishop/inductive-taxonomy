@@ -47,13 +47,18 @@ func TestSampleAnimalTaxonomy(t *testing.T) {
 
 func createInitialTaxonomy() *Taxonomy {
 	taxonomy := NewTaxonomy()
-	oao := NewObjectAdditionOperator("Animal", "", nil)
+	oao := NewObjectAdditionOperator("Animal", "")
 	return oao.Apply(taxonomy)
 }
 
 func marisaSeesStanleyTheKomodoDragon() {
-	oao := NewObjectAdditionOperator("Stanley", "Animal", createProperties(map[string]interface{}{"blooded": "cold", "hasHair": false}))
+	oao := NewObjectAdditionOperator("Stanley", "Animal")
 	animalTaxonomy = oao.Apply(animalTaxonomy)
+	ouo := NewObjectUpdateOperator("Stanley", createProperties(map[string]interface{}{
+		"blooded": "cold",
+		"hasHair": false,
+	}))
+	animalTaxonomy = ouo.Apply(animalTaxonomy)
 }
 
 func marisaLearnsThatStanleyIsAReptile() {
@@ -62,22 +67,26 @@ func marisaLearnsThatStanleyIsAReptile() {
 }
 
 func marisaSeesClydeTheElephant() {
-	oao := NewObjectAdditionOperator("Clyde", "Animal", createProperties(map[string]interface{}{
+	oao := NewObjectAdditionOperator("Clyde", "Animal")
+	animalTaxonomy = oao.Apply(animalTaxonomy)
+	ouo := NewObjectUpdateOperator("Clyde", createProperties(map[string]interface{}{
 		"blooded":  "warm",
 		"hasHair":  true,
 		"hasTrunk": true,
 		"hasTusks": true,
 	}))
-	animalTaxonomy = oao.Apply(animalTaxonomy)
+	animalTaxonomy = ouo.Apply(animalTaxonomy)
 }
 
 func marisaSeesJerryTheGiraffe() {
-	oao := NewObjectAdditionOperator("Jerry", "Animal", createProperties(map[string]interface{}{
+	oao := NewObjectAdditionOperator("Jerry", "Animal")
+	animalTaxonomy = oao.Apply(animalTaxonomy)
+	ouo := NewObjectUpdateOperator("Jerry", createProperties(map[string]interface{}{
 		"blooded":     "warm",
 		"hasHair":     true,
 		"hasLongNeck": true,
 	}))
-	animalTaxonomy = oao.Apply(animalTaxonomy)
+	animalTaxonomy = ouo.Apply(animalTaxonomy)
 }
 
 func marisaLearnsThatClydeIsAnElephant() {
@@ -113,8 +122,10 @@ func marisaRealizesThatSomeElephantsHaveTusksAndSomeElephantsDoNot() {
 }
 
 func addElephant(name string, propertyMap map[string]interface{}) {
-	oao := NewObjectAdditionOperator(name, "Elephant", createProperties(propertyMap))
+	oao := NewObjectAdditionOperator(name, "Elephant")
 	animalTaxonomy = oao.Apply(animalTaxonomy)
+	ouo := NewObjectUpdateOperator(name, createProperties(propertyMap))
+	animalTaxonomy = ouo.Apply(animalTaxonomy)
 }
 
 func createProperties(propertyMap map[string]interface{}) []Property {
@@ -152,5 +163,5 @@ func printObjectString(object Object) {
 }
 
 func checkPrototype(t *testing.T, taxonomy *Taxonomy, instanceName string, prototypeName string) {
-	assert.Equal(t, animalTaxonomy.GetObject(prototypeName), animalTaxonomy.GetObject(instanceName).Prototype())
+	assert.Equal(t, taxonomy.GetObject(prototypeName), taxonomy.GetObject(instanceName).Prototype())
 }
