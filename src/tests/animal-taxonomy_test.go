@@ -53,55 +53,52 @@ func createInitialTaxonomy() *Taxonomy {
 
 func marisaSeesStanleyTheKomodoDragon() {
 	oao := NewObjectAdditionOperator("Stanley", "Animal")
-	animalTaxonomy = oao.Apply(animalTaxonomy)
 	ouo := NewObjectUpdateOperator("Stanley", createProperties(map[string]interface{}{
 		"blooded": "cold",
 		"hasHair": false,
 	}))
-	animalTaxonomy = ouo.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{oao, ouo}, animalTaxonomy)
 }
 
 func marisaLearnsThatStanleyIsAReptile() {
 	po := NewPromotionOperator("Reptile", []string{"Stanley"})
-	animalTaxonomy = po.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{po}, animalTaxonomy)
 }
 
 func marisaSeesClydeTheElephant() {
 	oao := NewObjectAdditionOperator("Clyde", "Animal")
-	animalTaxonomy = oao.Apply(animalTaxonomy)
 	ouo := NewObjectUpdateOperator("Clyde", createProperties(map[string]interface{}{
 		"blooded":  "warm",
 		"hasHair":  true,
 		"hasTrunk": true,
 		"hasTusks": true,
 	}))
-	animalTaxonomy = ouo.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{oao, ouo}, animalTaxonomy)
 }
 
 func marisaSeesJerryTheGiraffe() {
 	oao := NewObjectAdditionOperator("Jerry", "Animal")
-	animalTaxonomy = oao.Apply(animalTaxonomy)
 	ouo := NewObjectUpdateOperator("Jerry", createProperties(map[string]interface{}{
 		"blooded":     "warm",
 		"hasHair":     true,
 		"hasLongNeck": true,
 	}))
-	animalTaxonomy = ouo.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{oao, ouo}, animalTaxonomy)
 }
 
 func marisaLearnsThatClydeIsAnElephant() {
 	po := NewPromotionOperator("Elephant", []string{"Clyde"})
-	animalTaxonomy = po.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{po}, animalTaxonomy)
 }
 
 func marisaLearnsThatJerryIsAGiraffe() {
 	po := NewPromotionOperator("Giraffe", []string{"Jerry"})
-	animalTaxonomy = po.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{po}, animalTaxonomy)
 }
 
 func marisaLearnsThatElephantsAndGiraffesAreMammals() {
 	po := NewPromotionOperator("Mammal", []string{"Elephant", "Giraffe"})
-	animalTaxonomy = po.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{po}, animalTaxonomy)
 }
 
 func marisaSeesChloeTheElephant() {
@@ -113,19 +110,16 @@ func marisaSeesClaireTheElephant() {
 }
 
 func marisaRealizesThatSomeElephantsHaveTusksAndSomeElephantsDoNot() {
-	po := NewPromotionOperator("ElephantWithoutTusks", []string{"Chloe", "Claire"})
-	animalTaxonomy = po.Apply(animalTaxonomy)
-	po = NewPromotionOperator("ElephantWithTusks", []string{"Clyde"})
-	animalTaxonomy = po.Apply(animalTaxonomy)
+	po1 := NewPromotionOperator("ElephantWithoutTusks", []string{"Chloe", "Claire"})
+	po2 := NewPromotionOperator("ElephantWithTusks", []string{"Clyde"})
 	do := NewDistributionOperator("Elephant")
-	animalTaxonomy = do.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{po1, po2, do}, animalTaxonomy)
 }
 
 func addElephant(name string, propertyMap map[string]interface{}) {
 	oao := NewObjectAdditionOperator(name, "Elephant")
-	animalTaxonomy = oao.Apply(animalTaxonomy)
 	ouo := NewObjectUpdateOperator(name, createProperties(propertyMap))
-	animalTaxonomy = ouo.Apply(animalTaxonomy)
+	applyOperatorsToTaxonomy([]Operator{oao, ouo}, animalTaxonomy)
 }
 
 func createProperties(propertyMap map[string]interface{}) []Property {
@@ -134,6 +128,12 @@ func createProperties(propertyMap map[string]interface{}) []Property {
 		properties = append(properties, NewProperty(key, val))
 	}
 	return properties
+}
+
+func applyOperatorsToTaxonomy(operators []Operator, taxonomy *Taxonomy) {
+	for _, operator := range operators {
+		taxonomy = operator.Apply(taxonomy)
+	}
 }
 
 func printTaxonomy(taxonomy *Taxonomy) {
