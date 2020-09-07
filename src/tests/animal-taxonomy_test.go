@@ -3,8 +3,8 @@ package tests
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	. "object"
 	. "operators"
+	"os"
 	. "taxonomy"
 	"testing"
 )
@@ -24,7 +24,7 @@ func TestSampleAnimalTaxonomy(t *testing.T) {
 	marisaSeesClaireTheElephant()
 	marisaRealizesThatSomeElephantsHaveTusksAndSomeElephantsDoNot()
 
-	printTaxonomy(animalTaxonomy)
+	generatePlantUML(*animalTaxonomy, "/home/mike/IdeaProjects/inductive-taxonomy/src/resources/taxonomy.puml")
 
 	checkPrototype(t, animalTaxonomy, "Mammal", "Animal")
 	checkPrototype(t, animalTaxonomy, "Reptile", "Animal")
@@ -136,32 +136,39 @@ func applyOperatorsToTaxonomy(operators []Operator, taxonomy *Taxonomy) {
 	}
 }
 
-func printTaxonomy(taxonomy *Taxonomy) {
-	prototypeRelationships := taxonomy.GetPrototypeRelationships()
-	for _, prototypeRelationship := range prototypeRelationships {
-		printObjectString(prototypeRelationship.Instance())
-		fmt.Print(" -> ")
-		printObjectString(*prototypeRelationship.Prototype())
-		fmt.Println()
-	}
-}
-
-func printObjectString(object Object) {
-	fmt.Print(object.Name())
-	propertyCount := len(object.Properties())
-	if len(object.Properties()) > 0 {
-		fmt.Print("{")
-		i := 0
-		for key, val := range object.Properties() {
-			fmt.Print(key, ": ", val)
-			if i++; i < propertyCount {
-				fmt.Print(", ")
-			}
-		}
-		fmt.Print("}")
-	}
-}
-
 func checkPrototype(t *testing.T, taxonomy *Taxonomy, instanceName string, prototypeName string) {
 	assert.Equal(t, taxonomy.GetObject(prototypeName), taxonomy.GetObject(instanceName).Prototype())
+}
+
+func generatePlantUML(taxonomy Taxonomy, filePath string) {
+	file, err := os.Create(filePath)
+	checkFileError(err)
+	defer file.Close()
+
+	_, err = file.WriteString("@startuml\n")
+	checkFileError(err)
+
+	for _, prototypeRelationship := range taxonomy.GetPrototypeRelationships() {
+		_, err := file.WriteString(prototypeRelationship.Prototype().Name() + " <|-- " + prototypeRelationship.Instance().Name() + "\n")
+		checkFileError(err)
+	}
+
+	for _, object := range taxonomy.GetObjects() {
+		for key, val := range object.Properties() {
+			valueString := fmt.Sprintf("%v", val)
+			_, err := file.WriteString(object.Name() + " : " + key + " = " + valueString + "\n")
+			checkFileError(err)
+		}
+	}
+
+	_, err = file.WriteString("@enduml\n")
+	checkFileError(err)
+
+	file.Sync()
+}
+
+func checkFileError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
