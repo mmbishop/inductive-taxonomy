@@ -25,16 +25,8 @@ func (po PromotionOperator) ObjectNames() []string {
 
 func (po PromotionOperator) Apply(taxonomy *Taxonomy) *Taxonomy {
 	prototype := NewObject(po.prototypeName)
-	var propertySet mapset.Set = nil
 	objects := getObjects(po.objectNames, taxonomy)
-	for _, object := range objects {
-		if propertySet == nil {
-			propertySet = mapset.NewSet()
-			addProperties(propertySet, object)
-		} else {
-			propertySet = propertySet.Intersect(getPropertySet(object))
-		}
-	}
+	propertySet := getIntersectionOfProperties(objects)
 	setProperties(prototype, propertySet)
 	prototype.SetPrototype(objects[0].Prototype())
 	for _, object := range objects {
@@ -43,6 +35,19 @@ func (po PromotionOperator) Apply(taxonomy *Taxonomy) *Taxonomy {
 	}
 	taxonomy.AddObject(prototype)
 	return taxonomy
+}
+
+func getIntersectionOfProperties(objects []*Object) mapset.Set {
+	var propertySet mapset.Set = nil
+	for _, object := range objects {
+		if propertySet == nil {
+			propertySet = mapset.NewSet()
+			addProperties(propertySet, object)
+		} else {
+			propertySet = propertySet.Intersect(getPropertySet(object))
+		}
+	}
+	return propertySet
 }
 
 func getObjects(objectNames []string, taxonomy *Taxonomy) []*Object {

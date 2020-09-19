@@ -27,15 +27,7 @@ func (do DistributionOperator) Apply(taxonomy *Taxonomy) *Taxonomy {
 }
 
 func distributeProperties(prototype *Object, instances []*Object) {
-	for _, property := range getPropertiesToDistribute(prototype, instances) {
-		for _, instance := range instances {
-			if instance.Properties()[property] == nil {
-				prototypeVal := prototype.Properties()[property]
-				instance.Set(property, prototypeVal)
-				prototype.Unset(property)
-			}
-		}
-	}
+	pushPropertiesFromPrototypeToInstancesThatDoNotHaveIt(getPropertiesToDistribute(prototype, instances), prototype, instances)
 }
 
 func getPropertiesToDistribute(prototype *Object, instances []*Object) []string {
@@ -58,4 +50,20 @@ func getPropertyKeys(object *Object) []string {
 		propertyKeys = append(propertyKeys, key)
 	}
 	return propertyKeys
+}
+
+func pushPropertiesFromPrototypeToInstancesThatDoNotHaveIt(propertyNames []string, prototype *Object, instances []*Object) {
+	for _, propertyName := range propertyNames {
+		for _, instance := range instances {
+			if instance.Properties()[propertyName] == nil {
+				pushPropertyFromPrototypeToInstance(propertyName, prototype, instance)
+			}
+		}
+	}
+}
+
+func pushPropertyFromPrototypeToInstance(propertyName string, prototype *Object, instance *Object) {
+	prototypeVal := prototype.Properties()[propertyName]
+	instance.Set(propertyName, prototypeVal)
+	prototype.Unset(propertyName)
 }
